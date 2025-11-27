@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="WASAPI test/WASAPI test.vcxproj" Id="f955c4ac-7dda-4e97-baf0-90a9e19fee7c" />
+</Solution>

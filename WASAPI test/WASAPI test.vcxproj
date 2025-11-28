@@ -128,12 +128,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MyAudioSink.cpp" />
     <ClCompile Include="MyAudioSource.cpp" />
     <ClCompile Include="PlayAudioStream.cpp" />
+    <ClCompile Include="RecordAudioStream.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MyAudioSink.h" />
     <ClInclude Include="MyAudioSource.h" />
     <ClInclude Include="PlayAudioStream.h" />
+    <ClInclude Include="RecordAudioStream.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

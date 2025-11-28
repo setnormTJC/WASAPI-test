@@ -8,6 +8,17 @@
 #include <ksmedia.h> // Includes GUID definitions like KSDATAFORMAT_SUBTYPE_IEEE_FLOAT
 
 
+MyAudioSource::MyAudioSource(const std::vector<float>& inputTimeAmplitudes)
+{
+	timeAmplitudes = std::make_unique<float[]>(sampleCount); //this needs to be modified to inputTimeAmplitudes.size() soon!
+
+	for (size_t i = 0; i < sampleCount; ++i) //also modify this loop termination condition!
+	{
+		timeAmplitudes[i] = inputTimeAmplitudes[i];
+	}
+
+	initialized = true;
+}
 
 
 
@@ -30,10 +41,6 @@ HRESULT MyAudioSource::SetFormat(WAVEFORMATEX* wfex)
 
 	else
 	{
-		if (pFormat->cbSize != 0)
-		{
-			//??
-		}
 		//format is the member var of this class
 		format.Format = *pFormat; //a copy of the arg.
 
@@ -67,14 +74,17 @@ HRESULT MyAudioSource::SetFormat(WAVEFORMATEX* wfex)
 	std::cout << "Samples per second: " << format.Format.nSamplesPerSec << "\n";
 	std::cout << "Bits per sample: " << format.Format.wBitsPerSample << "\n";
 
-	init(); 
+	if (!initialized) //parameterized constructor can ALSO fill `timeAmplitudes`
+	{
+		init(); 
+	}
 
 	return S_OK; //temp return val.
 }
 
 void MyAudioSource::init()
 {
-	pPCMAudio = std::make_unique<float[]>(sampleCount);
+	timeAmplitudes = std::make_unique<float[]>(sampleCount);
 
 	const float radianPerSample = 2 * M_PI * frequency / (float)format.Format.nSamplesPerSec; 
 
@@ -86,7 +96,7 @@ void MyAudioSource::init()
 
 		sampleValue += 0.05f * sin(1.75f * radianPerSample * (float)i); //and a third 
 
-		pPCMAudio[i] = sampleValue;
+		timeAmplitudes[i] = sampleValue;
 	}
 
 	initialized = true; 
@@ -158,6 +168,8 @@ void MyAudioSource::init()
 //}
 
 
+
+
 HRESULT MyAudioSource::LoadData(UINT32 totalFrames, BYTE* dataOut, DWORD* flags)
 {
 	if (!initialized)
@@ -189,7 +201,7 @@ HRESULT MyAudioSource::LoadData(UINT32 totalFrames, BYTE* dataOut, DWORD* flags)
 	/*Possible data conversion (if PCM -> IEEE float or vice versa, for example) and copy loop*/
 	if (IsEqualGUID(format.SubFormat, KSDATAFORMAT_SUBTYPE_IEEE_FLOAT))
 	{
-		const float* pSource = &pPCMAudio[pcmPos]; //no .get needed here on unique_ptr 
+		const float* pSource = &timeAmplitudes[pcmPos]; //no .get needed here on unique_ptr 
 		memcpy(dataOut, pSource, samplesToCopy * sizeof(float));
 	}
 
@@ -199,7 +211,7 @@ HRESULT MyAudioSource::LoadData(UINT32 totalFrames, BYTE* dataOut, DWORD* flags)
 
 		for (UINT32 i = 0; i < samplesToCopy; ++i)
 		{
-			float fSample = pPCMAudio[pcmPos + i];
+			float fSample = timeAmplitudes[pcmPos + i];
 
 			// Convert float (-1.0 to 1.0) to short (-32768 to 32767)
 			// Clamp value to prevent overflow during conversion

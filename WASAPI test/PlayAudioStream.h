@@ -11,13 +11,9 @@
 
 #define REFTIMES_PER_MILLISEC 10'000
 
-#define EXIT_ON_ERROR (hr) \
-							if (FAILED(hr))\
-							{\
-								goto Exit;\
-							}
-
 #define SAFE_RELEASE(punk) if((punk) != NULL) {(punk)->Release(); (punk) = NULL;}
+
+
 
 
 HRESULT PlayAudioStream(MyAudioSource* pMySource);

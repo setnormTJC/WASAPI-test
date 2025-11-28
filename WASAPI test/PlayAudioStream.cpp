@@ -1,7 +1,6 @@
 #include "PlayAudioStream.h"
 
 
-#undef EXIT_ON_ERROR
 #define EXIT_ON_ERROR(hr) \
         if (FAILED(hr)) {goto Exit;}
 
@@ -54,7 +53,7 @@ HRESULT PlayAudioStream(MyAudioSource* pMySource)
 	);
 	EXIT_ON_ERROR(hr);
 
-	//5.1 get device's default "shared mix format" (differs from 
+	//5.1 get device's default "shared mix format" 
 	hr = pAudioClient->GetMixFormat(&pwfx);
 	EXIT_ON_ERROR(hr);
 

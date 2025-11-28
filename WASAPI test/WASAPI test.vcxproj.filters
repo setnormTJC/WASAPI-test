@@ -24,12 +24,24 @@
     <ClCompile Include="MyAudioSource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RecordAudioStream.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MyAudioSink.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PlayAudioStream.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MyAudioSource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MyAudioSink.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RecordAudioStream.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -5,13 +5,21 @@
 
 
 #include"PlayAudioStream.h"
+#include"RecordAudioStream.h"
 
 int main()
 {
-	MyAudioSource myAudioSource; 
+	MyAudioSink myAudioSink; 
+
+	RecordAudioStream(&myAudioSink);
+
+	std::cout << "Done recording\n";
+
+	std::vector<float> timeAmplitudes = myAudioSink.getTimeAmplitudes(); 
+
+	//now feed to MyAudioSource: 
+	MyAudioSource myAudioSource(timeAmplitudes);
 
 	PlayAudioStream(&myAudioSource);
-
-
 }
 

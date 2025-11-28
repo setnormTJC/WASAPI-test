@@ -6,9 +6,13 @@
 #include<memory>
 #include<mmdeviceapi.h>
 #include<iostream>
+#include<vector> 
 #include<Windows.h>
 
-/*Class impl "foundation" taken primarily from: 
+/*forward dec. for friend func.*/
+HRESULT PlayAudioStream(class MyAudioSource* pMySource);
+
+/*Class impl "foundation" taken partially from: 
 https://gist.github.com/mhamilt/859e57f064e4d5b2bb8e78ae55439d70
 */
 class MyAudioSource
@@ -16,13 +20,16 @@ class MyAudioSource
 public: 
 	MyAudioSource() = default; 
 
-	~MyAudioSource() = default;
+	MyAudioSource(const std::vector<float>& inputTimeAmplitudes);
 
+	friend HRESULT PlayAudioStream(MyAudioSource* pMySource);
+private: 
 	HRESULT LoadData(UINT32 totalFrames, BYTE* dataOut, DWORD* flags);
 	HRESULT SetFormat(WAVEFORMATEX* wfex);
-private: 
+
 	void init(); //fills pPCMAudio with a sine wave
 	bool initialized = false; 
+
 	WAVEFORMATEXTENSIBLE format; 
 
 	unsigned int pcmPos = 0; 
@@ -36,5 +43,5 @@ private:
 
 	float frequency = 110.0f; 
 
-	std::unique_ptr<float[]> pPCMAudio; 
+	std::unique_ptr<float[]> timeAmplitudes; /*This is the sound wave data in the time domain*/
 };

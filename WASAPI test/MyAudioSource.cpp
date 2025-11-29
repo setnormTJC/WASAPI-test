@@ -8,6 +8,15 @@
 #include <ksmedia.h> // Includes GUID definitions like KSDATAFORMAT_SUBTYPE_IEEE_FLOAT
 
 
+MyAudioSource::MyAudioSource(float desiredFrequency)
+	:
+	frequency(desiredFrequency)
+{
+	duration = 3; //seconds 
+	sampleCount = duration * samplesPerSecond;
+
+}
+
 MyAudioSource::MyAudioSource(const std::vector<float>& inputTimeAmplitudes)
 {
 	timeAmplitudes = std::make_unique<float[]>(inputTimeAmplitudes.size()); //this needs to be modified to inputTimeAmplitudes.size() soon!
@@ -94,9 +103,9 @@ void MyAudioSource::init()
 	{
 		float sampleValue = 0.05f* sin(radianPerSample * (float)i); //0.05f is amplitude
 
-		sampleValue += 0.05f * sin(1.5f * radianPerSample * (float)i); //add some "harmonic" (that might not be harmonious)
+		//sampleValue += 0.05f * sin(1.5f * radianPerSample * (float)i); //add some "harmonic" (that might not be harmonious)
 
-		sampleValue += 0.05f * sin(1.75f * radianPerSample * (float)i); //and a third 
+		//sampleValue += 0.05f * sin(1.75f * radianPerSample * (float)i); //and a third 
 
 		timeAmplitudes[i] = sampleValue;
 	}

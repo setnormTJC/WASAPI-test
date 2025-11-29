@@ -20,6 +20,9 @@ class MyAudioSource
 public: 
 	MyAudioSource() = default; 
 
+	MyAudioSource(float desiredFrequency); 
+
+
 	MyAudioSource(const std::vector<float>& inputTimeAmplitudes);
 
 	friend HRESULT PlayAudioStream(MyAudioSource* pMySource);
@@ -38,7 +41,7 @@ private:
 
 	static constexpr unsigned int samplesPerSecond = 48'000; 
 
-	//unsigned int duration = 5;
+	unsigned int duration;
 	unsigned int sampleCount;// = samplesPerSecond * duration; //5 seconds of audio (48K is actually perhaps more common than 44.1K)
 
 	float frequency = 110.0f; 

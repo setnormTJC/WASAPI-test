@@ -64,9 +64,9 @@ HRESULT MyAudioSink::SetFormat(WAVEFORMATEX* wfex)
 	// Store the final format structure
 	format = *pExtFormat;
 
-	std::cout << "Channel count: " << format.Format.nChannels << "\n";
-	std::cout << "Samples per second: " << format.Format.nSamplesPerSec << "\n";
-	std::cout << "Bits per sample: " << format.Format.wBitsPerSample << "\n";
+	//std::cout << "Channel count: " << format.Format.nChannels << "\n";
+	//std::cout << "Samples per second: " << format.Format.nSamplesPerSec << "\n";
+	//std::cout << "Bits per sample: " << format.Format.wBitsPerSample << "\n";
 
 	return S_OK; 
 }

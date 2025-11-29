@@ -38,8 +38,8 @@ private:
 
 	static constexpr unsigned int samplesPerSecond = 48'000; 
 
-	static constexpr unsigned int duration = 5;
-	static const unsigned int sampleCount = samplesPerSecond * duration; //5 seconds of audio (48K is actually perhaps more common than 44.1K)
+	//unsigned int duration = 5;
+	unsigned int sampleCount;// = samplesPerSecond * duration; //5 seconds of audio (48K is actually perhaps more common than 44.1K)
 
 	float frequency = 110.0f; 
 

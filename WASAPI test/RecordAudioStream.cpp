@@ -74,6 +74,16 @@ HRESULT RecordAudioStream(MyAudioSink* pMySink)
 	hnsActualDuration = (double)REFTIMES_PER_SEC *
 		bufferFrameCount / pwfx->nSamplesPerSec;
 
+	std::cout << "Beginning recording in \n";
+	std::cout << "3...";
+	Sleep(1000); 
+	std::cout << "2...";
+	Sleep(1000);
+	std::cout << "1...";
+	Sleep(1000);
+	std::cout << "0";
+	//Sleep(1000);
+
 	hr = pAudioClient->Start();  // Start recording.
 	EXIT_ON_ERROR(hr);
 

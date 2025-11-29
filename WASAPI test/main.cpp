@@ -13,7 +13,7 @@ int main()
 
 	RecordAudioStream(&myAudioSink);
 
-	std::cout << "Done recording\n";
+	std::cout << "\nDone recording\n";
 
 	std::vector<float> timeAmplitudes = myAudioSink.getTimeAmplitudes(); 
 

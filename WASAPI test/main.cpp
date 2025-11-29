@@ -4,11 +4,16 @@
 #include <iostream>
 
 
+#include"ImguiManager.h"
+
 #include"PlayAudioStream.h"
 #include"RecordAudioStream.h"
 
 int main()
 {
+
+	ImguiManager imgui; 
+
 	MyAudioSink myAudioSink; 
 
 	RecordAudioStream(&myAudioSink);

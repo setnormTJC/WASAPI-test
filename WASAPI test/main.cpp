@@ -13,13 +13,16 @@
 #include"RecordAudioStream.h"
 #include "imgui/imgui_impl_win32.h"
 #include "imgui/imgui_impl_dx11.h"
-#include "audioManipulation.h"
+#include "AudioManipulation.h"
+#include <thread>
+
+#include "MusicNote.h"
+#include "MyException.h"
 
 
 
 // Global Window Handle
 HWND g_hWnd = NULL;
-
 
 
 
@@ -66,82 +69,109 @@ int CALLBACK WinMain(
 	int        nCmdShow)
 {
 
-
-	// --- 1. Win32 Window Setup ---
-	WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, _T("WASAPI ImGui Controller"), NULL };
-	RegisterClassEx(&wc);
-
-	// Create the application window
-	g_hWnd = CreateWindow(wc.lpszClassName, _T("WASAPI Audio Control"), WS_OVERLAPPEDWINDOW, 100, 100, 1280, 800, NULL, NULL, wc.hInstance, NULL);
-	if (!g_hWnd) return 1;
-
-	// --- 3. Initialize DirectX 11 ---
-	if (!CreateDeviceD3D(g_hWnd))
+	try
 	{
-		CleanupDeviceD3D();
-		UnregisterClass(wc.lpszClassName, wc.hInstance);
-		return 1;
-	}
 
-	// Show the window
-	ShowWindow(g_hWnd, SW_SHOWDEFAULT);
-	UpdateWindow(g_hWnd);
+		// --- 1. Win32 Window Setup ---
+		WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, _T("WASAPI ImGui Controller"), NULL };
+		RegisterClassEx(&wc);
 
+		// Create the application window
+		g_hWnd = CreateWindow(wc.lpszClassName, _T("WASAPI Audio Control"), WS_OVERLAPPEDWINDOW, 100, 100, 1280, 1800, NULL, NULL, wc.hInstance, NULL);
+		if (!g_hWnd) return 1;
 
-	// --- 4. Initialize ImGui ---
-	ImguiManager imgui; // Initialize the ImGui context
-
-	ImGui_ImplWin32_Init(g_hWnd);
-	ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dDeviceContext);
-
-	// Default clear color (dark gray/blue)
-	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
-	// --- 5. Main Loop ---
-	MSG msg;
-	ZeroMemory(&msg, sizeof(msg));
-	while (msg.message != WM_QUIT)
-	{
-		// Process messages waiting in the queue
-		if (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
+		// --- 2. Initialize DirectX 11 ---
+		if (!CreateDeviceD3D(g_hWnd))
 		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-			continue;
+			CleanupDeviceD3D();
+			UnregisterClass(wc.lpszClassName, wc.hInstance);
+			return 1;
 		}
 
-		// Start the ImGui frame
-		ImGui_ImplDX11_NewFrame();
-		ImGui_ImplWin32_NewFrame();
-		ImGui::NewFrame();
+		// Show the window
+		ShowWindow(g_hWnd, SW_SHOWDEFAULT);
+		UpdateWindow(g_hWnd);
 
-		// --- Custom GUI Drawing Logic (Next Step Goes Here) ---
-		//ImGui::ShowDemoWindow(); // Uncomment to see the demo window
-		doTheThingOfInterest(); 
 
-		// --- 6. Rendering ---
-		ImGui::Render();
-		const float clear_color_with_alpha[4] = { clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w };
-		g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, NULL);
-		g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView, clear_color_with_alpha);
-		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+		// --- 3. Initialize ImGui---
+		ImguiManager imgui; // Initialize the ImGui context
 
-		g_pSwapChain->Present(1, 0); // Present with vsync
 
-		// --- Main Loop End ---
+		ImGui_ImplWin32_Init(g_hWnd);
+		ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dDeviceContext);
+
+		// Default clear color (dark gray/blue)
+		ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
+
+		//4: Initialize audio manipulation
+		AudioManipulation audioManipulation;
+
+		//4b: init music note
+		MusicNote musicNote(Duration::Whole, Loudness::Mezzo, "C4");
+
+
+		// --- 5. Main Loop ---
+		MSG msg;
+		ZeroMemory(&msg, sizeof(msg));
+		while (msg.message != WM_QUIT)
+		{
+			// Process messages waiting in the queue
+			if (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
+			{
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+				continue;
+			}
+
+			// Start the ImGui frame
+			ImGui_ImplDX11_NewFrame();
+			ImGui_ImplWin32_NewFrame();
+			ImGui::NewFrame();
+
+			// --- Custom GUI Drawing Logic (Next Step Goes Here) ---
+			//ImGui::ShowDemoWindow(); // Uncomment to see the demo window
+
+			//std::thread thread(doTheThingOfInterest);
+
+			//thread.join(); 
+
+			audioManipulation.generateTone();
+
+			audioManipulation.generate88Notes(); 
+
+			//audioManipulation.playPureSineNote(); 
+
+			audioManipulation.playSynthesizedNote(); 
+
+			// --- 6. Rendering ---
+			ImGui::Render();
+			const float clear_color_with_alpha[4] = { clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w };
+			g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, NULL);
+			g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView, clear_color_with_alpha);
+			ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
+			g_pSwapChain->Present(1, 0); // Present with vsync
+
+			// --- Main Loop End ---
+		}
+
+
+		// --- 7. Cleanup ---
+		// Cleanup ImGui
+		ImGui_ImplDX11_Shutdown();
+		ImGui_ImplWin32_Shutdown();
+		// The ImguiManager destructor handles ImGui::DestroyContext()
+
+		// Cleanup D3D11 and Win32
+		CleanupDeviceD3D();
+		DestroyWindow(g_hWnd);
+		UnregisterClass(wc.lpszClassName, wc.hInstance);
 	}
 
-
-	// --- 7. Cleanup ---
-	// Cleanup ImGui
-	ImGui_ImplDX11_Shutdown();
-	ImGui_ImplWin32_Shutdown();
-	// The ImguiManager destructor handles ImGui::DestroyContext()
-
-	// Cleanup D3D11 and Win32
-	CleanupDeviceD3D();
-	DestroyWindow(g_hWnd);
-	UnregisterClass(wc.lpszClassName, wc.hInstance);
-
+	catch (const MyException& e)
+	{
+		std::cout << e.whatWentWrong() << "\n";
+	}
 	return 0;
 }

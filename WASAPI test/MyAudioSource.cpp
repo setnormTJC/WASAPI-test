@@ -17,16 +17,29 @@ MyAudioSource::MyAudioSource(float desiredFrequency)
 
 }
 
+MyAudioSource::MyAudioSource(float durationInSeconds, float desiredFrequency, float normalizedLoudness)
+	:
+	sampleCount(durationInSeconds * samplesPerSecond), 
+	normalizedLoudness(normalizedLoudness),
+	frequency(desiredFrequency) 
+{
+
+}
+
 MyAudioSource::MyAudioSource(const std::vector<float>& inputTimeAmplitudes)
 {
-	timeAmplitudes = std::make_unique<float[]>(inputTimeAmplitudes.size()); //this needs to be modified to inputTimeAmplitudes.size() soon!
+	//timeAmplitudes = std::make_unique<float[]>(inputTimeAmplitudes.size()); //this needs to be modified to inputTimeAmplitudes.size() soon!
+
 
 	sampleCount = inputTimeAmplitudes.size(); 
 
-	for (size_t i = 0; i < sampleCount; ++i) //also modify this loop termination condition!
-	{
-		timeAmplitudes[i] = inputTimeAmplitudes[i];
-	}
+
+	timeAmplitudes = inputTimeAmplitudes;
+
+	//for (size_t i = 0; i < sampleCount; ++i) //also modify this loop termination condition!
+	//{
+	//	timeAmplitudes[i] = inputTimeAmplitudes[i];
+	//}
 
 	initialized = true;
 }
@@ -95,19 +108,22 @@ HRESULT MyAudioSource::SetFormat(WAVEFORMATEX* wfex)
 
 void MyAudioSource::init()
 {
-	timeAmplitudes = std::make_unique<float[]>(sampleCount);
+	//timeAmplitudes = std::make_unique<float[]>(sampleCount);
+
+	timeAmplitudes.reserve(sampleCount);
 
 	const float radianPerSample = 2 * M_PI * frequency / (float)format.Format.nSamplesPerSec; 
 
 	for (unsigned long i  = 0; i < sampleCount; ++i)
 	{
-		float sampleValue = 0.05f* sin(radianPerSample * (float)i); //0.05f is amplitude
+		float sampleValue = normalizedLoudness* sin(radianPerSample * (float)i); //0.05f is amplitude
 
 		//sampleValue += 0.05f * sin(1.5f * radianPerSample * (float)i); //add some "harmonic" (that might not be harmonious)
 
 		//sampleValue += 0.05f * sin(1.75f * radianPerSample * (float)i); //and a third 
 
-		timeAmplitudes[i] = sampleValue;
+		timeAmplitudes.push_back(sampleValue);
+		//timeAmplitudes[i] = sampleValue;
 	}
 
 	initialized = true; 

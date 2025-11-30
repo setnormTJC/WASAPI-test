@@ -22,6 +22,7 @@ public:
 
 	MyAudioSource(float desiredFrequency); 
 
+	MyAudioSource(float durationInSeconds, float desiredFrequency, float normalizedLoudness);
 
 	MyAudioSource(const std::vector<float>& inputTimeAmplitudes);
 
@@ -41,10 +42,13 @@ private:
 
 	static constexpr unsigned int samplesPerSecond = 48'000; 
 
-	unsigned int duration;
-	unsigned int sampleCount;// = samplesPerSecond * duration; //5 seconds of audio (48K is actually perhaps more common than 44.1K)
+	unsigned int duration{};
+	unsigned int sampleCount{};// = samplesPerSecond * duration; //5 seconds of audio (48K is actually perhaps more common than 44.1K)
+
+	float normalizedLoudness{}; 
 
 	float frequency = 110.0f; 
 
-	std::unique_ptr<float[]> timeAmplitudes; /*This is the sound wave data in the time domain*/
+	//std::unique_ptr<float[]> timeAmplitudes; /*This is the sound wave data in the time domain*/
+	std::vector<float> timeAmplitudes; 
 };
